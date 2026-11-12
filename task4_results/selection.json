@@ -1,0 +1,8 @@
+{
+  "variant": "mobile_frozen",
+  "seed": 0,
+  "provisional": false,
+  "rule": "Highest total camera-like correct predictions across seeds 0,1,2; tie: clean correct, then smaller model. Export seed 0 fixed in advance.",
+  "clean_mean": 0.954954954954955,
+  "camera_mean": 0.8558558558558559
+}

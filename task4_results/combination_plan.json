@@ -1,0 +1,30 @@
+{
+  "mobile_combined": {
+    "config": {
+      "model": "mobilenet",
+      "frozen": false,
+      "geometry": true,
+      "colour": true,
+      "cosine": true,
+      "epochs": 30
+    },
+    "reference": "mobile_geometry_colour",
+    "label": "Fine-tuned + geometry + colour + cosine, 30 epochs",
+    "reason": "Geometry, colour, cosine and extra epochs each increased mean camera-like accuracy on the fine-tuned controls, although several gains were noisy. Test the requested combination without claiming the effects add up.",
+    "based_on_comparison_sha256": "d4c5c9ae410c47d48d3c8f865084ed440aadc07ec8becc2fb4f662aea094894c"
+  },
+  "mobile_frozen_combined": {
+    "config": {
+      "model": "mobilenet",
+      "frozen": true,
+      "geometry": true,
+      "colour": true,
+      "cosine": true,
+      "epochs": 30
+    },
+    "reference": "mobile_frozen",
+    "label": "Frozen + geometry + colour + cosine, 30 epochs",
+    "reason": "Freezing was the strongest initial strategy. Test the same requested recipe while preserving the frozen backbone. The augmentation/schedule effects under freezing are not isolated by this combination.",
+    "based_on_comparison_sha256": "d4c5c9ae410c47d48d3c8f865084ed440aadc07ec8becc2fb4f662aea094894c"
+  }
+}

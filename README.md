@@ -55,3 +55,45 @@ Serve this directory over HTTP, for example `python3 -m http.server 8000`, then 
 - [jSquash JPEG](https://github.com/jamsinclair/jSquash), Apache-2.0 license; MozJPEG decoder included by that package.
 
 The original model, description and check files are supplied course assets.
+
+## Task 4 — controlled comparisons
+
+The Task 4 work keeps the existing Task 3 `LeafDataset`, `LeafNetBN` and batch
+training loop. The only tested changes are colour augmentation, frozen versus
+fine-tuned pretrained MobileNet, geometric/colour augmentation, cosine scheduling
+and more epochs. A CNN without geometry is included as a control.
+
+- [REPORT.md](REPORT.md): measured results draft; the student must write/revise the
+  final interpretation and add real phone-camera observations.
+- [task4.py](task4.py): readable training, comparison and export code.
+- [Notebook](Copy_of_ex08_student.ipynb): original exercise with focused Task 4 cells
+  and the corrected group dataset link.
+- [All seed measurements](task4_results/results.csv),
+  [paired comparisons](task4_results/comparison_table.md), and per-run JSON files.
+- [Phone model](task4_results/phone/leaf_model.onnx) and
+  [export verification](task4_results/phone/export_validation.json).
+
+Use Python 3.11 and install `task4_requirements.txt`. Download/extract the supplied
+class ZIP into `data/leaves` using Task 2a of the notebook, then run:
+
+```sh
+python task4.py compare
+python task4.py combine
+python task4.py export
+```
+
+The saved combination plan explains why those combinations were chosen after the
+individual rows. Every comparison uses the same source images and seeds 0, 1, 2.
+Camera-like validation is materialized once with seed 2026. Results are final-epoch
+weights; selection for export uses mean camera-like accuracy, then clean accuracy
+and model size as tie-breakers. Seed 0 is fixed in advance for the exported model.
+
+The [course camera app](https://tomasvicar.github.io/MLR-public/apps/classifier/)
+can load the exported ONNX file directly. Local ONNX predictions are checked
+against PyTorch on all 37 clean and 37 camera-like inputs. The course-app upload
+was blocked by declined browser file permission; a physical phone trial remains
+for the student. This separate Task 4 export does not change the existing Leaf
+Lens app's model or its earlier reference check.
+
+Raw datasets, transformed validation images, training checkpoints and dependency
+caches are not committed. The code regenerates them from the supplied split.
