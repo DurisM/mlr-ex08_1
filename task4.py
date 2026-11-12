@@ -250,7 +250,7 @@ def train_variant(name, config, seed, val_ds, camera_ds):
 def summarize():
     rows = [json.loads(p.read_text())["result"] for p in sorted(OUT.glob("*_seed*.json"))]
     with open(OUT / "results.csv", "w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     def mean_sd(values):
