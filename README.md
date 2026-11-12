@@ -1,0 +1,57 @@
+# Leaf Lens — MLR exercise 08
+
+**Open the app: https://durism.github.io/mlr-ex08/**
+
+A buildless leaf classifier: one `index.html` containing plain JavaScript, CSS and an inline QR code. The supplied ONNX model and JSON/image assets sit alongside it. Hosted with GitHub Pages from `main`, repository root.
+
+## Use
+
+Open the HTTPS link in Safari on iPhone, tap **Start rear camera**, and allow camera access. Center a well-lit leaf in the square. The probabilities for apple, cherry, chestnut and maple update continuously. **Stop camera** releases the camera; leaving the page also stops it. Tap Start to resume after returning.
+
+Use **Upload a photo** if camera permission is denied or a camera is unavailable. Images are processed on the device and are never uploaded. An internet connection is needed to load the model and CDN libraries.
+
+## Exact model preprocessing
+
+`model_info.json` is read at runtime; class order and preprocessing settings are not duplicated in JavaScript:
+
+1. Crop the central square: side = `min(width, height)`, origin = `((width-side)/2, (height-side)/2)`.
+2. Resize to `input_size` × `input_size` (96 × 96 for the supplied model), using the browser canvas with high-quality smoothing.
+3. Extract RGB, divide each byte by 255, then apply `(channel - mean[channel]) / std[channel]`.
+4. Pack float32 values in NCHW order, shape `[1, 3, input_size, input_size]`.
+5. Run the model using its declared input/output names and apply stable softmax to its four output logits.
+
+Mean: `[0.485, 0.456, 0.406]`; standard deviation: `[0.229, 0.224, 0.225]`.
+
+ONNX Runtime Web 1.22.0 loads from jsDelivr and uses single-threaded WebAssembly, supported by Safari without cross-origin isolation headers. The video uses `autoplay`, `muted` and `playsinline`, starts with a user gesture, and requests `facingMode: environment`. Only one prediction runs at a time.
+
+JPEGs, including uploaded photos, are decoded locally with the pinned jSquash/MozJPEG decoder (1.6.0, loaded from jsDelivr). Safari's native JPEG decoder produced slightly different pixels for the reference image; consistent decoding resolves that difference. Other image formats use native browser decoding. No framework or build step is required.
+
+## Reference verification
+
+Tap **Run reference photo check** to run `check_image.jpg` through the same preprocessing and model path used for photos and camera frames, then compare every class with `check_expected.json`. PASS requires maximum absolute probability error ≤ `0.00001` (to allow floating-point differences).
+
+Verified in WebKit with an iPhone-sized viewport and in Chromium:
+
+| Class | Expected probability | Browser probability |
+| --- | ---: | ---: |
+| apple | 0.9672254324 | 0.9672252840 |
+| cherry | 0.0249426793 | 0.0249426902 |
+| chestnut | 0.0074095908 | 0.0074096636 |
+| maple | 0.0004223514 | 0.0004223623 |
+
+Maximum absolute error: `1.484 × 10^-7`. Photo upload and denied-camera fallback were checked in WebKit. Central-square crop, channel normalization, NCHW layout, repeated inference and camera track cleanup were checked with a simulated stream. Physical iPhone camera hardware was not available for testing.
+
+## QR code
+
+The labelled QR code at the bottom of the app is an inline SVG, generated locally with Python's `qrcode` package. It encodes **https://durism.github.io/mlr-ex08/** and has a clickable text link alongside it. No external QR-image service is used. Its encoded URL was independently decoded and compared with the app's public URL.
+
+## Local preview
+
+Serve this directory over HTTP, for example `python3 -m http.server 8000`, then open `http://localhost:8000`. Phone camera access requires an HTTPS deployment rather than an ordinary HTTP LAN address.
+
+## Libraries
+
+- [ONNX Runtime Web](https://onnxruntime.ai/docs/get-started/with-javascript/web.html), MIT license.
+- [jSquash JPEG](https://github.com/jamsinclair/jSquash), Apache-2.0 license; MozJPEG decoder included by that package.
+
+The original model, description and check files are supplied course assets.
