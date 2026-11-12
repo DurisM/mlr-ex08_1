@@ -1,9 +1,0 @@
-{
-  "variant": "mobile_frozen",
-  "seed": 0,
-  "validation_images": 74,
-  "max_probability_error": 8.64267349243164e-06,
-  "bytes": 6097585,
-  "reference_image_error": 4.172325134277344e-07,
-  "onnx_sha256": "80b928dd2484c57178a2c4d876aa6512572334120f2539502147aefba864c50c"
-}
